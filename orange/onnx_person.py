@@ -54,7 +54,7 @@ def get_video_fps(video_path):
     return fps
 
 def main():
-    session = ort.InferenceSession("orange/yolov5n.onnx")
+    session = ort.InferenceSession("yolov5n.onnx")
     cam_path = 'rtsp://admin:Damin1234@192.168.12.16:554/'  # or 0 for webcam
 
     fps = get_video_fps(cam_path)
