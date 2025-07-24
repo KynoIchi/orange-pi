@@ -55,14 +55,14 @@ def get_video_fps(video_path):
 
 def main():
     session = ort.InferenceSession("orange/yolov5n.onnx")
-    cam_path = 'rtsp://admin:Damin3001@192.168.11.16:554/'  # or 0 for webcam
+    cam_path = 'rtsp://admin:Damin1234@192.168.12.16:554/'  # or 0 for webcam
 
     fps = get_video_fps(cam_path)
     if fps is None:
         fps = 15  # fallback
     delay = max(1, int(1000 / fps))
 
-    cap = cv2.VideoCapture(0)  # Webcam, ganti cam_path jika RTSP
+    cap = cv2.VideoCapture(cam_path)  # Webcam, ganti cam_path jika RTSP
     while True:
         ret, frame = cap.read()
         if not ret:
