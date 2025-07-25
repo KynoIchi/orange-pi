@@ -9,7 +9,7 @@ import requests
 # === KONFIGURASI ===
 RTSP_URL = "rtsp://admin:Damin1234@192.168.12.16:554/"
 MODEL_PATH = "yolov5n.onnx"
-POST_URL = "http://192.168.12.217:5000/datamasuk/add_deteksi"
+POST_URL = "http://192.168.12.217:5000/datamasuk/add_deteksi"  # IP Server Flask lokal
 SAVE_DIR = "captures"
 INPUT_SIZE = 640
 CONF_THRESH = 0.4
@@ -18,23 +18,26 @@ NMS_THRESH = 0.5
 os.makedirs(SAVE_DIR, exist_ok=True)
 last_capture_time = 0
 
-# === Class COCO yang kita pakai (hanya person) ===
+# === Hanya class "person" ===
 class_names = ["person"]
 
-# === Kirim JSON ke server Beacon ===
-def send_json(timestamp_str, person_count):
-    payload = {
+# === Kirim data + gambar ke server Flask ===
+def send_data_with_image(timestamp_str, person_count, image_path):
+    data = {
         "waktu": timestamp_str,
-        "registered_user": person_count
+        "registered_user": str(person_count)
+    }
+    files = {
+        "image": open(image_path, "rb")
     }
     try:
-        res = requests.post(POST_URL, json=payload, timeout=5)
+        res = requests.post(POST_URL, data=data, files=files, timeout=5)
         res.raise_for_status()
-        print(f"📡 JSON terkirim ke Beacon: {res.status_code} | {payload}")
+        print(f"📡 Terkirim ke server: {res.status_code} | {data}")
     except requests.exceptions.RequestException as e:
-        print(f"❌ Gagal kirim JSON ke Beacon: {e}")
+        print(f"❌ Gagal kirim ke server: {e}")
 
-# === Gambar bounding box & hitung person ===
+# === Deteksi bounding box dan jumlah orang ===
 def draw_yolo_detections(frame, preds, input_size=640, conf_thresh=0.4, nms_thresh=0.5):
     h, w, _ = frame.shape
     boxes, scores, class_ids = [], [], []
@@ -45,8 +48,6 @@ def draw_yolo_detections(frame, preds, input_size=640, conf_thresh=0.4, nms_thre
             continue
         class_conf = pred[5:]
         class_id = np.argmax(class_conf)
-
-        # Deteksi hanya untuk "person"
         if class_id != 0 or class_conf[class_id] < conf_thresh:
             continue
 
@@ -101,7 +102,7 @@ def run():
             time.sleep(1)
             continue
 
-        # Preprocess input
+        # Preprocess
         img = cv2.resize(frame, (INPUT_SIZE, INPUT_SIZE))
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
         img = np.transpose(img, (2, 0, 1))
@@ -110,19 +111,18 @@ def run():
         preds = session.run(None, {'images': img})[0][0]
         frame_with_boxes, person_count = draw_yolo_detections(frame, preds)
 
-        # Simpan frame hasil deteksi ke folder
+        # Save image
         timestamp = datetime.now()
         timestamp_str = timestamp.strftime("%Y-%m-%d %H:%M:%S")
         filename_str = timestamp.strftime("%Y-%m-%d_%H-%M-%S")
         image_path = os.path.join(SAVE_DIR, f"frame_{filename_str}_count{person_count}.jpg")
 
-        success = cv2.imwrite(image_path, frame_with_boxes)
-        if not success:
+        if not cv2.imwrite(image_path, frame_with_boxes):
             print("❌ Gagal menyimpan gambar")
             continue
 
-        # Kirim hasil deteksi ke server eksternal
-        send_json(timestamp_str, person_count)
+        # Kirim ke server
+        send_data_with_image(timestamp_str, person_count, image_path)
         last_capture_time = now
 
 if __name__ == "__main__":
