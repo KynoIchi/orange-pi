@@ -138,7 +138,7 @@ camera_list = [
     {"nama_keterangan": "Pintu Masuk Luar", "ip": "192.168.11.20", "port": "554", "username": "admin", "password": "Damin3001"},
     {"nama_keterangan": "Pintu Masuk Timur", "ip": "192.168.11.21", "port": "554", "username": "admin", "password": "Damin3001"},
     {"nama_keterangan": "Pos Satpam", "ip": "192.168.11.22", "port": "554", "username": "admin", "password": "Damin3001"},
-    {"nama_keterangan": "Gudang", "ip": "192.168.11.23", "port": "554", "username": "admin", "password": "Damin3001"},
+    {"nama_keterangan": "Gudang_Teknisi", "ip": "192.168.11.23", "port": "554", "username": "admin", "password": "Damin3001"},
     {"nama_keterangan": "Gudang + K3", "ip": "192.168.11.24", "port": "554", "username": "admin", "password": "Damin3001"},
     {"nama_keterangan": "Kamar Mandi Belakang", "ip": "192.168.11.25", "port": "554", "username": "admin", "password": "Damin3001"},
     # {"nama_keterangan": "CCTV Triangle", "ip": "192.168.11.60", "port": "554", "username": "admin", "password": "Damin2025"},
