@@ -23,7 +23,7 @@ def ping_ipcam(ip: str, timeout: int = 1000) -> int:
         print(f"❌ Error pinging {ip}: {e}")
         return 0
 
-def detect_image_quality_from_frame(image, patch_size=64, fog_threshold=12.0, fog_ratio_threshold=0.3,
+def detect_image_quality_from_frame(image, patch_size=64, fog_threshold=15.0, fog_ratio_threshold=0.5,
                                     blur_threshold=100.0, contrast_threshold=30.0):
     if image is None:
         raise ValueError("❌ Gambar tidak valid.")
