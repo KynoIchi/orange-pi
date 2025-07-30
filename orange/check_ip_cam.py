@@ -119,12 +119,13 @@ def monitor_ipcam(ip: str, rtsp_url: str, nama_keterangan: str, interval_sec: in
             "nama_keterangan": nama_keterangan,
             "status_ping": "Online" if status_ping else "Offline",
             "ping_time_ms": ping_result["time_ms"],
-            "ping_ttl": ping_result["ttl"],
+            "ping_ttl": ping_result["ttl"],  # ✅ TTL ditambahkan
             "quality": result["quality_status"],
             "blur_score": result["blur_score"],
             "contrast_score": result["contrast_score"],
             "fog_patch_ratio": result["fog_patch_ratio"]
         }
+
 
         try:
             response = requests.post(API_ENDPOINT, json=payload, timeout=10)
